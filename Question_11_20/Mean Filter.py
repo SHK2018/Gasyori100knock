@@ -4,7 +4,7 @@ import numpy as np
 
 
 # Median filter
-def median_filter(img, K_size=3):
+def mean_filter(img, K_size=3):
     H, W, C = img.shape
 
     ## Zero padding
@@ -18,7 +18,7 @@ def median_filter(img, K_size=3):
     for y in range(H):
         for x in range(W):
             for c in range(C):
-                out[pad+y, pad+x, c] = np.median(tmp[y:y+K_size, x:x+K_size, c])
+                out[pad+y, pad+x, c] = np.mean(tmp[y:y+K_size, x:x+K_size, c])
 
     out = out[pad:pad+H, pad:pad+W].astype(np.uint8)
 
@@ -26,13 +26,13 @@ def median_filter(img, K_size=3):
 
 
 # Read image
-img = cv2.imread("imori_noise.jpg").astype(np.float32)
+img = cv2.imread("imori.jpg").astype(np.float32)
 
 # Gaussianfilter
-out = median_filter(img).astype(np.uint8)
+out = mean_filter(img).astype(np.uint8)
 
 # Show and save image
-cv2.imwrite("Myresult/out10.jpg", out)
+cv2.imwrite("Myresult/out11.jpg", out)
 cv2.namedWindow("result", 0)
 cv2.resizeWindow("result", 256, 256)
 cv2.imshow("result", out)
@@ -43,10 +43,11 @@ cv2.destroyAllWindows()
 # =============================================================================
 # OpenCV implement
 # Read image
-img = cv2.imread("imori_noise.jpg")
+img = cv2.imread("imori.jpg")
 
 # Average pooling
-out = cv2.medianBlur(img, 3)
+
+out = cv2.boxFilter(img, -1, (3, 3), normalize=1)
 # step size is different
 
 # Show and save image
