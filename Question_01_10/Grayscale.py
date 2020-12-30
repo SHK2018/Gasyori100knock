@@ -21,7 +21,9 @@ img = cv2.imread("./imori.jpg").astype(float)
 out = BGR2GRAY(img)
 
 # Save result
-cv2.imwrite("./out2.jpg", out)
+cv2.imwrite("Myresult/out2.jpg", out)
+cv2.namedWindow("result",0);
+cv2.resizeWindow("result", 256, 256);
 cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
@@ -29,9 +31,11 @@ cv2.destroyAllWindows()
 
 # =============================================================================
 # OpenCV implement:
-img = cv2.imread("Myresult/imori.jpg")
+img = cv2.imread("imori.jpg")
 # In OpenCV API data type will change by default when doing grayscale
 out2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+cv2.namedWindow("result2",0);
+cv2.resizeWindow("result2", 256, 256);
 cv2.imshow("result2", out2)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

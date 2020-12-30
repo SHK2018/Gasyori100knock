@@ -23,16 +23,20 @@ img = cv2.imread("./imori.jpg")
 img = BGR2RGB(img)
 
 #Save result
-cv2.imwrite("./out1.jpg", img)
+cv2.imwrite("Myresult/out1.jpg", img)
+cv2.namedWindow("result",0);
+cv2.resizeWindow("result", 256, 256);
 cv2.imshow("result", img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-
+# %%
 # =============================================================================
 # OpenCV2 implement:
-img = cv2.imread("Myresult/imori.jpg")
+img = cv2.imread("imori.jpg")
 img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+cv2.namedWindow("result2",0);
+cv2.resizeWindow("result2", 256, 256);
 cv2.imshow("result2", img2)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

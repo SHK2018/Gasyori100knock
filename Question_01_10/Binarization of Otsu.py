@@ -42,7 +42,7 @@ def binarization(img, threshold=128):
     return img
 
 # Read image
-img = cv2.imread("Myresult/imori.jpg").astype(np.float32)
+img = cv2.imread("imori.jpg").astype(np.float32)
 
 # Grayscale
 out = BGR2GRAY(img)
@@ -53,7 +53,9 @@ print("The proper threshold is %03d" % th)
 out = binarization(out, th)
 
 # Save result
-cv2.imwrite("./out4.jpg", out)
+cv2.imwrite("Myresult/out4.jpg", out)
+cv2.namedWindow("result",0);
+cv2.resizeWindow("result", 256, 256);
 cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
@@ -65,6 +67,8 @@ img = cv2.imread("./imori.jpg")
 out2 = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 r, out2 = cv2.threshold(out2, 1, 256, cv2.THRESH_OTSU)
 print("The proper threshold is %03d" % r)
+cv2.namedWindow("result2",0);
+cv2.resizeWindow("result2", 256, 256);
 cv2.imshow("result2", out2)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
