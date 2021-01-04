@@ -51,31 +51,16 @@ def HSV2BGR(_img, hsv):
 	H_ = H / 60.
 	X = C * (1 - np.abs( H_ % 2 - 1))
 	Z = np.zeros_like(H)
-<<<<<<< HEAD
-
-=======
-    
-    # BGR image
->>>>>>> 1796e645f1d82fee8bd22c60f42eb4ce37d6c599
 	vals = [[Z,X,C], [Z,C,X], [X,C,Z], [C,X,Z], [C,Z,X], [X,Z,C]]
 
 	for i in range(6):
 		ind = np.where((i <= H_) & (H_ < (i+1)))
-<<<<<<< HEAD
 		out[..., 0][ind] = (V - C)[ind] + vals[i][0][ind]
 		out[..., 1][ind] = (V - C)[ind] + vals[i][1][ind]
 		out[..., 2][ind] = (V - C)[ind] + vals[i][2][ind]
 
 	out[np.where(max_v == min_v)] = 0
 	out = np.clip(out, 0, 1)
-=======
-		out[..., 0][ind] = (V - C)[ind] + vals[i][0][ind] # Blue channel
-		out[..., 1][ind] = (V - C)[ind] + vals[i][1][ind] # Green channel
-		out[..., 2][ind] = (V - C)[ind] + vals[i][2][ind] # Red channel
-
-	out[np.where(max_v == min_v)] = 0
-	out = np.clip(out, 0, 1) # Assure that the value is between 0 and 1
->>>>>>> 1796e645f1d82fee8bd22c60f42eb4ce37d6c599
 	out = (out * 255).astype(np.uint8)
 
 	return out
@@ -84,54 +69,35 @@ def HSV2BGR(_img, hsv):
 # Read image
 img = cv2.imread("imori.jpg").astype(np.float32)
 
-# RGB > HSV
+# BGR > HSV
 hsv = BGR2HSV(img)
 
 # Transpose Hue
 hsv[..., 0] = (hsv[..., 0] + 180) % 360
 
-# HSV > RGB
+# HSV > BGR
 out = HSV2BGR(img, hsv)
 
 # Save result
 cv2.imwrite("Myresult/out5.jpg", out)
-<<<<<<< HEAD
 cv2.namedWindow("result",0);
 cv2.resizeWindow("result", 256, 256);
-=======
->>>>>>> 1796e645f1d82fee8bd22c60f42eb4ce37d6c599
 cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-<<<<<<< HEAD
 # %%
 # =============================================================================
 # OpenCV implement
-=======
-# cv2.imread format is BGR
-# image save in disk is RGB
-# when do cv2mwrite, OpenCV2 will do a cv2.COLOR_BGR2RGB then save the image
-
-# %%
-# =============================================================================
-# OpenCV2 implement
->>>>>>> 1796e645f1d82fee8bd22c60f42eb4ce37d6c599
 import cv2
 import numpy as np
 img = cv2.imread("imori.jpg")
 hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-<<<<<<< HEAD
 hsv[..., 0] = (hsv[..., 0] + 180) % 360
 out = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 cv2.namedWindow("result2",0);
 cv2.resizeWindow("result2", 256, 256);
 cv2.imshow("result2", out)
-=======
-hsv[..., 0] = (hsv[..., 0] +180) % 360
-img2 = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
-cv2.imshow("result2", img2)
->>>>>>> 1796e645f1d82fee8bd22c60f42eb4ce37d6c599
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 # =============================================================================

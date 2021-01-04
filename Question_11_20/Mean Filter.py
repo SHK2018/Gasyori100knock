@@ -3,7 +3,7 @@ import cv2
 import numpy as np
 
 
-# Median filter
+# Mean filter
 def mean_filter(img, K_size=3):
     H, W, C = img.shape
 
@@ -26,10 +26,10 @@ def mean_filter(img, K_size=3):
 
 
 # Read image
-img = cv2.imread("imori.jpg").astype(np.float32)
+img = cv2.imread("imori.jpg")
 
-# Gaussianfilter
-out = mean_filter(img).astype(np.uint8)
+# mean filter
+out = mean_filter(img)
 
 # Show and save image
 cv2.imwrite("Myresult/out11.jpg", out)

@@ -26,10 +26,10 @@ def median_filter(img, K_size=3):
 
 
 # Read image
-img = cv2.imread("imori_noise.jpg").astype(np.float32)
+img = cv2.imread("imori_noise.jpg")
 
-# Gaussianfilter
-out = median_filter(img).astype(np.uint8)
+# Median filter
+out = median_filter(img)
 
 # Show and save image
 cv2.imwrite("Myresult/out10.jpg", out)

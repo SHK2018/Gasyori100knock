@@ -40,10 +40,10 @@ def gaussian_filter(img, K_size=3, sigma=1.3):
 
 
 # Read image
-img = cv2.imread("imori_noise.jpg").astype(np.float32)
+img = cv2.imread("imori_noise.jpg")
 
 # Gaussianfilter
-out = gaussian_filter(img).astype(np.uint8)
+out = gaussian_filter(img)
 
 # Show and save image
 cv2.imwrite("Myresult/out9.jpg", out)
