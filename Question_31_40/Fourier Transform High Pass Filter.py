@@ -104,8 +104,9 @@ G = hpf(G)
 
 # IDFT
 out = idft(G)
+
 # Save result
-cv2.namedWindow("result")
+cv2.namedWindow("result", 0)
 cv2.resizeWindow("result", 256, 256)
 
 cv2.imshow("result", out)

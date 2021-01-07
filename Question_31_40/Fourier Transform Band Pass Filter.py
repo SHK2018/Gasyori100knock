@@ -6,11 +6,6 @@ import numpy as np
 # DFT hyper-parameters
 K, L = 128, 128
 
-# bgr -> gray
-def bgr2gray(img):
-	gray = 0.2126 * img[..., 2] + 0.7152 * img[..., 1] + 0.0722 * img[..., 0]
-	return gray
-
 
 # DFT
 def dft(img):
@@ -104,8 +99,9 @@ G = bpf(G)
 
 # IDFT
 out = idft(G)
+
 # Save result
-cv2.namedWindow("result")
+cv2.namedWindow("result", 0)
 cv2.resizeWindow("result", 256, 256)
 
 cv2.imshow("result", out)

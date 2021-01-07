@@ -14,10 +14,6 @@ def Skew(img, a=1, b=0, c=0, d=1, tx=0, ty=0):
     K = np.matrix([[d, -b],[-c, a]])
     
     adbc = a*d - b*c
-    max_x = 0
-    max_y = 0
-    min_x = 2*W
-    min_y = 2*H
            
     for j in range(H_new):
         for i in range(W_new):
