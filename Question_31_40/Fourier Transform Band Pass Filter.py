@@ -6,11 +6,14 @@ import numpy as np
 # DFT hyper-parameters
 K, L = 128, 128
 
+# bgr -> gray
+def bgr2gray(img):
+	gray = 0.2126 * img[..., 2] + 0.7152 * img[..., 1] + 0.0722 * img[..., 0]
+	return gray
+
 
 # DFT
 def dft(img):
-	H, W, channel = img.shape
-
 	# Prepare DFT coefficient
 	G = np.zeros((L, K, channel), dtype=np.complex)
 
@@ -33,7 +36,7 @@ def dft(img):
 # IDFT
 def idft(G):
 	# prepare out image
-	H, W, channel = G.shape
+	H, W, _ = G.shape
 	out = np.zeros((H, W, channel), dtype=np.float32)
 
 	# prepare processed index corresponding to original image positions
@@ -53,19 +56,54 @@ def idft(G):
 	return out
 
 
+# LPF
+def bpf(G, lratio=0.1, hratio=0.5):
+	H, W, _ = G.shape	
+
+	# transfer positions
+	_G = np.zeros_like(G)
+	_G[:H//2, :W//2] = G[H//2:, W//2:] # new 1 fill with origin 4
+	_G[:H//2, W//2:] = G[H//2:, :W//2] # new 2 fill with origin 3
+	_G[H//2:, :W//2] = G[:H//2, W//2:] # new 3 fill with origin 2
+	_G[H//2:, W//2:] = G[:H//2, :W//2] # new 4 fill with origin 1
+
+	# get distance from center (H / 2, W / 2)
+	x = np.tile(np.arange(W), (H, 1))
+	y = np.arange(H).repeat(W).reshape(H, -1)
+
+	# make filter
+	_x = x - W // 2
+	_y = y - H // 2
+	r = np.sqrt(_x ** 2 + _y ** 2)
+	mask = np.ones((H, W), dtype=np.float32)
+	mask[(r < (W // 2 * lratio))|(r > (W // 2 * hratio))] = 0
+
+	mask = np.repeat(mask, channel).reshape(H, W, channel)
+
+	# filtering
+	_G *= mask
+
+	# reverse original positions
+	G[:H//2, :W//2] = _G[H//2:, W//2:]
+	G[:H//2, W//2:] = _G[H//2:, :W//2]
+	G[H//2:, :W//2] = _G[:H//2, W//2:]
+	G[H//2:, W//2:] = _G[:H//2, :W//2]
+
+	return G
+
+
 # Read image
 img = cv2.imread("imori.jpg").astype(np.float32)
+H, W, channel = img.shape
 
 # DFT
 G = dft(img)
 
-# write poser spectal to image
-ps = (np.abs(G) / np.abs(G).max() * 255).astype(np.uint8)
-cv2.imwrite("Myresult/out32_1.jpg", ps)
+# LPF
+G = bpf(G)
 
 # IDFT
 out = idft(G)
-
 # Save result
 cv2.namedWindow("result")
 cv2.resizeWindow("result", 256, 256)
@@ -73,6 +111,6 @@ cv2.resizeWindow("result", 256, 256)
 cv2.imshow("result", out)
 cv2.waitKey(0)
 
-cv2.imwrite("Myresult/out32_2.jpg", out)
+cv2.imwrite("Myresult/out35.jpg", out)
 
 cv2.destroyAllWindows()
