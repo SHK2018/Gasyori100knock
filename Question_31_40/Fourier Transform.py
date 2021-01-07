@@ -61,18 +61,18 @@ G = dft(img)
 
 # write poser spectal to image
 ps = (np.abs(G) / np.abs(G).max() * 255).astype(np.uint8)
-cv2.imwrite("Myresult/out32_1.jpg", ps)
 
 # IDFT
 out = idft(G)
 
 # Save result
+out = np.hstack([ps, out])
 cv2.namedWindow("result", 0)
-cv2.resizeWindow("result", 256, 256)
+cv2.resizeWindow("result", 512, 256)
 
 cv2.imshow("result", out)
 cv2.waitKey(0)
 
-cv2.imwrite("Myresult/out32_2.jpg", out)
+cv2.imwrite("Myresult/out32.jpg", out)
 
 cv2.destroyAllWindows()
