@@ -206,7 +206,7 @@ def Canny(img):
 
 
 # Read image
-img = cv2.imread("imori.jpg").astype(np.float32)
+img = cv2.imread("../imori.jpg").astype(np.float32)
 
 # Canny
 edge = Canny(img)
@@ -214,7 +214,7 @@ edge = Canny(img)
 out = edge.astype(np.uint8)
 
 # Save result
-cv2.imwrite("out.jpg", out)
+# cv2.imwrite("out.jpg", out)
 cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
