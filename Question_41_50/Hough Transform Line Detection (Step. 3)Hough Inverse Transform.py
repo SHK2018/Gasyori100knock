@@ -204,17 +204,88 @@ def Canny(img, HT=100 , LT=30):
 
     return edge, angle
 
-def Hough_Line_step1(edge):
-    H, W = edge.shape
-    rmax = np.ceil(np.sqrt(H ** 2 + W ** 2)).astype(np.int)
-    out = np.zeros([rmax*2, 180], dtype = int)
-    for j in range(H):
-        for i in range(W):
-            if edge[j, i]:
-                for theta in range(180):
-                    t = np.pi / 180 * theta
-                    rh0 = int((i * np.cos(t) + j * np.sin(t)))
-                    out[rh0 + rmax, theta] += 1
+def Hough_Line(edgem, img):
+    
+    def Hough_Transform(edge):
+        H, W = edge.shape
+        
+        rmax = np.ceil(np.sqrt(H ** 2 + W ** 2)).astype(np.int)
+        out_ = np.zeros([rmax*2, 180], dtype = int)
+        
+        for j in range(H):
+            for i in range(W):
+                if edge[j, i]:
+                    for theta in range(180):
+                        t = np.pi / 180 * theta
+                        rh0 = int((i * np.cos(t) + j * np.sin(t)))
+                        out_[rh0 + rmax, theta] += 1
+                        
+        return out_.astype(np.uint8)
+    
+    def NMS(out_):
+        H, W = out_.shape
+        
+        out = np.zeros([H+2, W+2], dtype = np.uint8)
+        out[1:H+1, 1:W+1] = out_.copy()
+        
+        K = [[1., 1., 1.], [1., 0., 1.], [1., 1., 1.]]
+        for j in range(1,H+1):
+            for i in range(1,W+1):
+                if np.max(K * out[j-1:j+2, i-1:i+2]) <= out[j, i]:
+                    pass
+                else:
+                    out[j, i] = 0
+                    
+        out_ = out[1:H+1, 1:W+1].astype(np.uint8)
+        
+        return out_
+    
+    def inverse_hough(hough, img):
+        H, W, _ = img.shape
+        rho_max, _ = hough.shape
+    
+        out = img.copy()
+    
+        # get x, y index of hough table
+        ind_x = np.argsort(hough.ravel())[::-1][:20]
+        ind_y = ind_x.copy()
+        thetas = ind_x % 180
+        rhos = ind_y // 180 - rho_max / 2
+    
+        # each theta and rho
+        for theta, rho in zip(thetas, rhos):
+            # theta[radian] -> angle[degree]
+            t = np.pi / 180. * theta
+    
+            # hough -> (x,y)
+            for x in range(W):
+                if np.sin(t) != 0:
+                    y = - (np.cos(t) / np.sin(t)) * x + (rho) / np.sin(t)
+                    y = int(y)
+                    if y >= H or y < 0:
+                        continue
+                    out[y, x] = [0, 0, 255]
+            for y in range(H):
+                if np.cos(t) != 0:
+                    x = - (np.sin(t) / np.cos(t)) * y + (rho) / np.cos(t)
+                    x = int(x)
+                    if x >= W or x < 0:
+                        continue
+                    out[y, x] = [0, 0, 255]
+                
+        out = out.astype(np.uint8)
+    
+        return out
+    
+    # Hough Transform
+    out_ = Hough_Transform(edge)
+    
+    #Non Maximum Suppression
+    hough = NMS(out_)
+    
+    # inverse hough
+    out = inverse_hough(hough, img)
+    
     return out.astype(np.uint8)
 
 # Read image
@@ -226,7 +297,7 @@ edge, angle = Canny(img)
 edge = edge.astype(np.uint8)
 angle = angle.astype(np.uint8)
 
-out = Hough_Line_step1(edge)
+out = Hough_Line(edge, img)
 
 # Save result
 # cv2.namedWindow("result", 0)
@@ -235,6 +306,6 @@ out = Hough_Line_step1(edge)
 cv2.imshow("result", out)
 cv2.waitKey(0)
 
-cv2.imwrite("Myresult/out44.jpg", out)
+cv2.imwrite("Myresult/out46.jpg", out)
 
 cv2.destroyAllWindows()
