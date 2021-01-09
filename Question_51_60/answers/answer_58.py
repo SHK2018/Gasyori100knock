@@ -70,7 +70,7 @@ def labeling_4nn(img):
     
 
 # Read image
-img = cv2.imread("seg.png").astype(np.float32)
+img = cv2.imread("../seg.png").astype(np.float32)
 
 # labeling 4 nearest neighbor
 out = labeling_4nn(img)

@@ -46,15 +46,12 @@ def erode(img, Dil_time=1):
     out = img.copy()
     H, W = img.shape
     
-    # Output image, zero padding
-    out = np.zeros([H+2, W+2], dtype = np.int)
-    
     # Kernel
     K = [[0, 1, 0], [1, 0, 1], [0, 1, 0]]
     
     # Apply kernel on the image
     for z in range(Dil_time):
-        out[1:H+1, 1:W+1] = img.copy()
+        out = np.pad(img, (1, 1), 'edge')
         for j in range(1, H+1):
             for i in range(1, W+1):
                 if out[j, i] == 255:
