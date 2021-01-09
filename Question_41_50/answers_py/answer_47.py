@@ -66,7 +66,7 @@ def Morphology_Erode(img, Dil_time=1):
 	return out
 
 # Read image
-img = cv2.imread("imori.jpg").astype(np.float32)
+img = cv2.imread("../imori.jpg").astype(np.float32)
 
 
 # Grayscale
@@ -79,7 +79,7 @@ otsu = otsu_binarization(gray)
 out = Morphology_Erode(otsu, Dil_time=2)
 
 # Save result
-cv2.imwrite("out.jpg", out)
+# cv2.imwrite("out.jpg", out)
 cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
