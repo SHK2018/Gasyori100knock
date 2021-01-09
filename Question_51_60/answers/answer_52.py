@@ -93,7 +93,7 @@ def Morphology_Opening(img, time=1):
     return erode
 
 # Read image
-img = cv2.imread("imori.jpg").astype(np.float32)
+img = cv2.imread("../imori.jpg").astype(np.float32)
 
 # Grayscale
 gray = BGR2GRAY(img)
@@ -108,7 +108,7 @@ opened = Morphology_Opening(otsu, time=3)
 out = np.abs(otsu - opened) * 255
                 
 # Save result
-cv2.imwrite("out.jpg", out)
+# cv2.imwrite("out.jpg", out)
 cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()

@@ -49,8 +49,10 @@ def dilate(img, Dil_time=1):
     # Output image, zero padding
     out = np.zeros([H+2, W+2], dtype = np.int)
     
-    # Kernel
-    K = [[0, 1, 0], [1, 0, 1], [0, 1, 0]]
+    # kernel
+    K = np.array(((0, 1, 0),
+                (1, 0, 1),
+                (0, 1, 0)), dtype=np.int)
     
     # Apply kernel on the image
     for z in range(Dil_time):
@@ -70,8 +72,10 @@ def erode(img, Dil_time=1):
     # Output image, zero padding
     out = np.zeros([H+2, W+2], dtype = np.int)
     
-    # Kernel
-    K = [[0, 1, 0], [1, 0, 1], [0, 1, 0]]
+    # kernel
+    K = np.array(((0, 1, 0),
+                (1, 0, 1),
+                (0, 1, 0)), dtype=np.int)
     
     # Apply kernel on the image
     for z in range(Dil_time):
@@ -84,26 +88,28 @@ def erode(img, Dil_time=1):
     
     return img
 
-def opening(img, Dil_time=1):
-    # Erode
-    _out = erode(img, Dil_time)
+def top_hat(otsu, time=1):    
+    img = otsu.copy()
+
+    er = erode(img, time)
+
+    op = dilate(er, time)
     
-    # Dilate
-    out = dilate(_out, Dil_time)
+    out = otsu - op
     
     return out
 
 # Read image
-img = cv2.imread("imori.jpg")
+img = cv2.imread("thorino.jpg").astype(np.float32)
 
 # Gray Scale
-out1 = BGR2GRAY(img)
+gray = BGR2GRAY(img)
 
 # Otsu Binarization
-out2 = otsu_binarization(out1)
+otsu = otsu_binarization(gray)
 
-# Opening
-out = opening(out2, 1)
+# Morphology gradient
+out = top_hat(otsu, 3)
 
 # Show and save image
 cv2.namedWindow("result")
@@ -113,4 +119,4 @@ cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-cv2.imwrite("Myresult/out49.jpg", out)
+cv2.imwrite("Myresult/out52.jpg", out)

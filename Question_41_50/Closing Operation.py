@@ -273,4 +273,4 @@ cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-cv2.imwrite("Myresult/out50.jpg")
+cv2.imwrite("Myresult/out50.jpg", out)

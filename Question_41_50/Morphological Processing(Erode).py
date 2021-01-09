@@ -83,4 +83,4 @@ cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-cv2.imwrite("Myresult/out48.jpg")
+cv2.imwrite("Myresult/out48.jpg", out)

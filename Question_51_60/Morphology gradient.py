@@ -84,12 +84,17 @@ def erode(img, Dil_time=1):
     
     return img
 
-def opening(img, Dil_time=1):
+def morphology_gradient(otsu, Dil_time=1):
+    img = otsu.copy()
     # Erode
-    _out = erode(img, Dil_time)
+    er = erode(img, Dil_time)
     
+    img = otsu.copy()
     # Dilate
-    out = dilate(_out, Dil_time)
+    dl = dilate(img, Dil_time)
+    
+    # Morphology gradient
+    out = np.abs(er - dl) * 255
     
     return out
 
@@ -97,13 +102,13 @@ def opening(img, Dil_time=1):
 img = cv2.imread("imori.jpg")
 
 # Gray Scale
-out1 = BGR2GRAY(img)
+gray = BGR2GRAY(img)
 
 # Otsu Binarization
-out2 = otsu_binarization(out1)
+otsu = otsu_binarization(gray)
 
-# Opening
-out = opening(out2, 1)
+# Morphology gradient
+out = morphology_gradient(otsu, 1)
 
 # Show and save image
 cv2.namedWindow("result")
@@ -113,4 +118,4 @@ cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-cv2.imwrite("Myresult/out49.jpg", out)
+cv2.imwrite("Myresult/out51.jpg", out)
