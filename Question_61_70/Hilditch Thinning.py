@@ -1,9 +1,8 @@
-import cv2
+# -*- coding: utf-8 -*-
 import numpy as np
-import matplotlib.pyplot as plt
+import cv2
 
 
-# hilditch thining
 def hilditch(img):
     # get shape
     H, W, C = img.shape
@@ -100,13 +99,20 @@ def hilditch(img):
 
 
 # Read image
-img = cv2.imread("../gazo.png").astype(np.float32)
+img = cv2.imread("gazo.png")
 
-# hilditch thining
+#
+
+# Process image
 out = hilditch(img)
 
-# Save result
-# cv2.imwrite("out.png", out)
+# Show and save image
+cv2.namedWindow("result", 0)
+cv2.resizeWindow("result", 300, 300)
+
 cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+cv2.imwrite("Myresult/64.jpg", out)
+

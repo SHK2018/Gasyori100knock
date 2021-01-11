@@ -48,14 +48,16 @@ def connect_8(img):
 
 
 # Read image
-img = cv2.imread("renketsu.png").astype(np.float32)
+img = cv2.imread("../renketsu.png").astype(np.float32)
 
 # connect 8
 out = connect_8(img)
 
 
 # Save result
-cv2.imwrite("out.png", out)
+cv2.namedWindow("result", 0)
+cv2.resizeWindow("result", 300, 300)
+# cv2.imwrite("out.png", out)
 cv2.imshow("result", out)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
