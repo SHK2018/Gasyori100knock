@@ -13,41 +13,44 @@ def BGR2GRAY(img):
 
     return out
 
-def L4N(img):
-        
-    H, W = img.shape
-    
-    # source = np.zeros_like(img, dtype=np.uint8)
-    # destination = np.zeros_like(img, dtype=np.uint8)
-    out = np.zeros([H + 1, W + 1], dtype=np.uint8)
+def L4N(img):    
+    tag = 0
+    grid = img.copy()
 
-    
-    K = np.array([[0, 1],[1, 0]], dtype=np.uint8)
-    tag = 1
-    
-    for j in range(1, H+1):
-        for i in range(1, W+1):
-            temp = K * out[j-1:j+1, i-1:i+1]
-            if img[j-1, i-1]:
-                if np.sum(temp) > 0:
-                    #source[j-1, i-1] = tag
-                    out[j, i] = np.min(temp[temp>0])
-                    continue
-                out[j, i] = tag
+    for j in range(H):
+        for i in range(W):
+            if grid[j, i] == 255:
                 tag += 1
- 
-    return (out[1:H+1, 1:W+1]*10).astype(np.uint8)
+                dfs(grid, j, i, tag)
+                
+    # draw color
+    COLORS = [[0, 0, 255], [0, 255, 0], [255, 0, 0], [255, 255, 0]]
+    out = np.zeros((H, W, C), dtype=np.uint8)
+
+    for i in range(tag):
+        out[grid == (i+1)] = COLORS[i]            
+    
+    return out
+
+def dfs(grid, j, i, tag):
+    grid[j, i] = tag
+    for y, x in [[0, 1], [1, 0], [0, -1]]:
+        tmp_j = j + y
+        tmp_i = i + x
+        if 0 <= tmp_j < H and 0 <= tmp_i < W and grid[tmp_j, tmp_i] == 255:
+            dfs(grid, tmp_j, tmp_i, tag)
+
 # Read image
 img = cv2.imread("seg.png").astype(np.float32)
+H, W, C = img.shape
 
 # Gray scale
 gray = BGR2GRAY(img)
 
-# Alpha blending
 out = L4N(gray)
 
 # Show and save image
-cv2.imshow("result", out)
+cv2.imshow("result", out*10)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
