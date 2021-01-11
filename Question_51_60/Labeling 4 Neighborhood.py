@@ -50,8 +50,8 @@ gray = BGR2GRAY(img)
 out = L4N(gray)
 
 # Show and save image
-cv2.imshow("result", out*10)
+cv2.imshow("result", out)
 cv2.waitKey(0)
-cv2.destroyAllWindows()
 
-cv2.imwrite("Mysult/out59.jpg", out)
+cv2.imwrite("Myresult/out58.jpg", out)
+cv2.destroyAllWindows()

@@ -16,8 +16,9 @@ img2 = cv2.imread("thorino.jpg").astype(np.float32)
 out = alpha_blending(img1, img2, 0.5)
 
 # Show and save image
+cv2.namedWindow("result", 0)
 cv2.imshow("result", out)
 cv2.waitKey(0)
-cv2.destroyAllWindows()
 
-cv2.imwrite("Mysult/out60.jpg", out)
+cv2.imwrite("Myresult/out60.jpg", out)
+cv2.destroyAllWindows()
