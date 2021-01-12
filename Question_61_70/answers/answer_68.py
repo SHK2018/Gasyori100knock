@@ -71,7 +71,7 @@ def HOG(img):
 
         return histogram
 
-		# histogram normalization
+	# histogram normalization
     def normalization(histogram, C=3, epsilon=1):
         cell_N_H, cell_N_W, _ = histogram.shape
         ## each histogram

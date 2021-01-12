@@ -67,7 +67,7 @@ def HOG_step2(img):
             for x in range(cell_N_W):
                 for j in range(N):
                     for i in range(N):
-                        histogram[y, x, gradient_quantized[y * 4 + j, x * 4 + i]] += magnitude[y * 4 + j, x * 4 + i]
+                        histogram[y, x, gradient_quantized[y * N + j, x * N + i]] += magnitude[y * N + j, x * N + i]
 
         return histogram
 
@@ -90,7 +90,7 @@ def HOG_step2(img):
 
 
 # Read image
-img = cv2.imread("imori.jpg").astype(np.float32)
+img = cv2.imread("../imori.jpg").astype(np.float32)
 
 # get HOG step2
 histogram = HOG_step2(img)
@@ -102,6 +102,6 @@ for i in range(9):
     plt.axis('off')
     plt.xticks(color="None")
     plt.yticks(color="None")
-plt.savefig("out.png")
+# plt.savefig("out.png")
 plt.show()
 
