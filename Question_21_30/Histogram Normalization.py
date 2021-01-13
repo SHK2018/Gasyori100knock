@@ -8,7 +8,7 @@ def grayscale_transformation(img, a=0, b=255):
     d = np.max(img)
     out = img.copy()
     
-    	# normalization
+    # normalization
     out = (b-a) / (d - c) * (out - c) + a
     out[out < a] = a
     out[out > b] = b
