@@ -105,6 +105,6 @@ for i in range(9):
     plt.axis('off')
     plt.xticks(color="None")
     plt.yticks(color="None")
-plt.savefig("Myresult/out67.png")
+plt.savefig("Myresult/out67.png", dpi=326)
 plt.show()
 

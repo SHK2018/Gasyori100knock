@@ -81,5 +81,5 @@ for i in range(4):
     plt.yticks(color="None")
     plt.title("Angle " + str(45*i))
 
-plt.savefig("Myresult/out79.png")
+plt.savefig("Myresult/out79.png", dpi=326)
 plt.show()

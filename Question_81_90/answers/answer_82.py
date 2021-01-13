@@ -101,7 +101,7 @@ def Harris_corner_step1(img):
 	plt.title("Ixy")
 	plt.axis("off")
 
-	plt.savefig("out.png")
+# 	plt.savefig("out.png")
 	plt.show()
 
 
