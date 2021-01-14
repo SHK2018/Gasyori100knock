@@ -1,28 +1,35 @@
+# -*- coding: utf-8 -*-
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from glob import glob
 
-## Dicrease color
-def dic_color(img):
-    img //= 63
-    img = img * 64 + 32
-    return img
+
+def decrease_color(img):
+    out = img.copy()
+    
+    out = (out // 63) * 64 + 32
+    
+    return out
 
 ## Database
 def get_DB():
     # get image paths
-    train = glob("../dataset/train_*")
+    train = glob("dataset/train_*") # Read all training data
     train.sort()
-
+    
+    # Set draw figure size
+    plt.figure(figsize=(19.20, 10.80))
+    
     # prepare database
-    db = np.zeros((len(train), 13), dtype=np.int32)
+    db = np.zeros((len(train), 13), dtype=np.int32) # 13 = (B + G + R) * 4 + tag
 
     # each image
     for i, path in enumerate(train):
-        img = dic_color(cv2.imread(path))
+        img = decrease_color(cv2.imread(path))
         # get histogram
         for j in range(4):
+            # count for numbers of pixels
             db[i, j] = len(np.where(img[..., 0] == (64 * j + 32))[0])
             db[i, j+4] = len(np.where(img[..., 1] == (64 * j + 32))[0])
             db[i, j+8] = len(np.where(img[..., 2] == (64 * j + 32))[0])
@@ -35,16 +42,21 @@ def get_DB():
 
         # store class label
         db[i, -1] = cls
-
+        
+        # for histogram: B(1,4), B(5,8), B(9,12)
         img_h = img.copy() // 64
         img_h[..., 1] += 4
         img_h[..., 2] += 8
+        
         plt.subplot(2, 5, i+1)
         plt.hist(img_h.ravel(), bins=12, rwidth=0.8)
-        plt.title(path)
+        plt.title(path[15:])
 
     print(db)
+    plt.savefig("Myresult/out84.png", dpi=326)
     plt.show()
+    
+    return db
 
 # get database
-get_DB()
+database = get_DB()
