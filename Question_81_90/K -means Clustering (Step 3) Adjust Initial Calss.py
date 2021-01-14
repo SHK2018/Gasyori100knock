@@ -13,8 +13,6 @@ def decrease_color(img):
     return out
 
 # Database
-
-
 def get_DB(dataset, th=0.5):
     # get image paths
     data = glob(dataset)  # Read all training data

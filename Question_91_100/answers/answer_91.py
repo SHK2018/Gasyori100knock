@@ -38,11 +38,12 @@ def k_means_step1(img, Class=5):
 
 
 # read image
-img = cv2.imread("imori.jpg").astype(np.float32)
+img = cv2.imread("../imori.jpg").astype(np.float32)
 
 # K-means step2
 out = k_means_step1(img)
 
-cv2.imwrite("out.jpg", out)
+# cv2.imwrite("out.jpg", out)
 cv2.imshow("result", out)
 cv2.waitKey(0)
+cv2.destroyAllWindows()
