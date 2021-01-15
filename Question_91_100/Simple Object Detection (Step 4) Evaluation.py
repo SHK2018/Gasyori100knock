@@ -509,6 +509,7 @@ for i in range(len(detects)):
 for g in GT:
     cv2.rectangle(img2, (g[0], g[1]), (g[2], g[3]), (0,255,0), 1)
 
+# green for GT, red for positive true and blue for neagetive true
 cv2.imwrite("Myresult/out100.jpg", img2)
 cv2.imshow("result", img2)
 cv2.waitKey(0)
