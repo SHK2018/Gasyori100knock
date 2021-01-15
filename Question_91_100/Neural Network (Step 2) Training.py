@@ -1,8 +1,39 @@
-import cv2
+# -*- coding: utf-8 -*-
 import numpy as np
+import cv2
+# import matplotlib.pyplot as plt
 
-np.random.seed(0)
+# get IoU overlap ratio
+def IoU(a, b):
+    # get area of a
+    area_a = (a[2] - a[0]) * (a[3] - a[1])
+    # get area of b
+    area_b = (b[2] - b[0]) * (b[3] - b[1])
 
+    # get left top x of IoU
+    iou_x1 = np.maximum(a[0], b[0])
+    # get left top y of IoU
+    iou_y1 = np.maximum(a[1], b[1])
+    # get right bottom of IoU
+    iou_x2 = np.minimum(a[2], b[2])
+    # get right bottom of IoU
+    iou_y2 = np.minimum(a[3], b[3])
+
+    # get width of IoU
+    iou_w = iou_x2 - iou_x1
+    # get height of IoU
+    iou_h = iou_y2 - iou_y1
+
+    # no overlap
+    if iou_w < 0 or iou_h < 0:
+        return 0.0
+
+    # get area of IoU
+    area_iou = iou_w * iou_h
+    # get overlap ratio between IoU and all area
+    iou = area_iou / (area_a + area_b - area_iou)
+
+    return iou
 
 # get HOG
 def HOG(img):
@@ -105,73 +136,72 @@ def HOG(img):
 
     return histogram
 
-
-# get IoU overlap ratio
-def iou(a, b):
-	# get area of a
-    area_a = (a[2] - a[0]) * (a[3] - a[1])
-	# get area of b
-    area_b = (b[2] - b[0]) * (b[3] - b[1])
-
-	# get left top x of IoU
-    iou_x1 = np.maximum(a[0], b[0])
-	# get left top y of IoU
-    iou_y1 = np.maximum(a[1], b[1])
-	# get right bottom of IoU
-    iou_x2 = np.minimum(a[2], b[2])
-	# get right bottom of IoU
-    iou_y2 = np.minimum(a[3], b[3])
-
-	# get width of IoU
-    iou_w = iou_x2 - iou_x1
-	# get height of IoU
-    iou_h = iou_y2 - iou_y1
-
-	# get area of IoU
-    area_iou = iou_w * iou_h
-	# get overlap ratio between IoU and all area
-    iou = area_iou / (area_a + area_b - area_iou)
-
-    return iou
-
-# resize using bi-linear
-def resize(img, h, w):
-    # get shape
-    _h, _w, _c  = img.shape
-
-    # get resize ratio
-    ah = 1. * h / _h
-    aw = 1. * w / _w
-
-    # get index of each y
-    y = np.arange(h).repeat(w).reshape(w, -1)
-    # get index of each x
-    x = np.tile(np.arange(w), (h, 1))
-
-    # get coordinate toward x and y of resized image
-    y = (y / ah)
-    x = (x / aw)
-
-    # transfer to int
-    ix = np.floor(x).astype(np.int32)
-    iy = np.floor(y).astype(np.int32)
-
-    # clip index
-    ix = np.minimum(ix, _w-2)
-    iy = np.minimum(iy, _h-2)
-
-    # get distance between original image index and resized image index
-    dx = x - ix
-    dy = y - iy
-
-    dx = np.tile(dx, [_c, 1, 1]).transpose(1, 2, 0)
-    dy = np.tile(dy, [_c, 1, 1]).transpose(1, 2, 0)
+## Database
+def get_db(img, gt, N=200, size=32, L=60, th=0.5):
     
-    # resize
-    out = (1 - dx) * (1 - dy) * img[iy, ix] + dx * (1 - dy) * img[iy, ix + 1] + (1 - dx) * dy * img[iy + 1, ix] + dx * dy * img[iy + 1, ix + 1]
-    out[out > 255] = 255
+    # Set draw figure size
+    # plt.figure(figsize=(19.20, 10.80))
+    
+    # get HOG feature dimension
+    HOG_feature_N = ((size // 8) ** 2) * 9
+    
+    # prepare database
+    label = np.zeros([N, 1], dtype=np.uint8)
+    db = np.zeros([N, HOG_feature_N])
 
-    return out
+    # each image
+    for i in range(N):
+        # get bounding box
+        cropped_img, cropped_label = crop_bbox(img, gt, 1, L=L, th=th)
+        
+        # get HOG feature
+        hog = HOG(cropped_img)
+        
+        # store HOG feature and label
+        db[i, :HOG_feature_N] = hog.ravel()
+        # save coresponding label
+        label[i, :] = cropped_label
+        
+        # for histogram: B(1,4), B(5,8), B(9,12)
+        # img_h = cropped_img.copy() // 64
+        # img_h[..., 1] += 4
+        # img_h[..., 2] += 8
+        
+    #     plt.subplot(2, N/2, i+1)
+    #     plt.hist(img_h.ravel(), bins=12, rwidth=0.8)
+    #     plt.title(i)
+
+    # plt.show()
+    
+    return db, label
+
+def crop_bbox(img, gt, Crop_N=200, L=60, th=0.5):
+    H, W, C = img.shape
+    
+    for i in range(Crop_N):
+        # get top letf x1 of crop bounding box
+        x1 = np.random.randint(W - L)
+        # get top letf y1 of crop bouding box
+        y1 = np.random.randint(H - L)
+        # get bottom right x2 and y2 of crop bounding box
+        x2 = x1 + L
+        y2 = y1 + L
+        
+        # crop bounding box
+        crop = np.array((x1, y1, x2, y2))
+        
+        # get IoU between crop box and ground truth
+        iou = IoU(gt, crop)
+        
+        # crop training data and assian label
+        if iou > th:
+            train_img = cv2.resize(img[y1:y2, x1:x2], (32, 32))
+            label = 1 
+        else:
+            train_img = cv2.resize(img[y1:y2, x1:x2], (32, 32))
+            label = 0
+            
+    return train_img, label
 
 
 # neural network
@@ -236,15 +266,16 @@ def sigmoid(x):
     return 1. / (1. + np.exp(-x))
 
 # train
-def train_nn(nn, train_x, train_t, iteration_N=10000):
-    # each iteration
-    for i in range(iteration_N):
+def train_nn(nn, train_x, train_t, iteration_N=5000):
+    for i in range(5000):
         # feed-forward data
         nn.forward(train_x)
-        # update parameter
+        #print("ite>>", i, 'y >>', nn.forward(train_x))
+        # update parameters
         nn.train(train_x, train_t)
 
     return nn
+
 
 # test
 def test_nn(nn, test_x, test_t, pred_th=0.5):
@@ -261,90 +292,29 @@ def test_nn(nn, test_x, test_t, pred_th=0.5):
             accuracy_N += 1
 
     # get accuracy 
-    accuracy = accuracy_N / len(db)
+    accuracy = accuracy_N / len(test_x)
 
-    print("Accuracy >> {} ({} / {})".format(accuracy, accuracy_N, len(db)))
+    print("Accuracy >> {} ({} / {})".format(accuracy, accuracy_N, len(test_x)))
+    
+    
+# read image
+img = cv2.imread("imori_1.jpg")
 
-
-# crop bounding box and make dataset
-def make_dataset(img, gt, Crop_N=200, L=60, th=0.5, H_size=32):
-    # get shape
-    H, W, _ = img.shape
-
-    # get HOG feature dimension
-    HOG_feature_N = ((H_size // 8) ** 2) * 9
-
-    # prepare database
-    db = np.zeros([Crop_N, HOG_feature_N + 1])
-
-    # each crop
-    for i in range(Crop_N):
-        # get left top x of crop bounding box
-        x1 = np.random.randint(W - L)
-        # get left top y of crop bounding box
-        y1 = np.random.randint(H - L)
-        # get right bottom x of crop bounding box
-        x2 = x1 + L
-        # get right bottom y of crop bounding box
-        y2 = y1 + L
-
-        # get bounding box
-        crop = np.array((x1, y1, x2, y2))
-
-        _iou = np.zeros((3,))
-        _iou[0] = iou(gt, crop)
-        #_iou[1] = iou(gt2, crop)
-        #_iou[2] = iou(gt3, crop)
-
-        # get label
-        if _iou.max() >= th:
-            cv2.rectangle(img, (x1, y1), (x2, y2), (0,0,255), 1)
-            label = 1
-        else:
-            cv2.rectangle(img, (x1, y1), (x2, y2), (255,0,0), 1)
-            label = 0
-
-        # crop area
-        crop_area = img[y1:y2, x1:x2]
-
-        # resize crop area
-        crop_area = resize(crop_area, H_size, H_size)
-
-        # get HOG feature
-        hog = HOG(crop_area)
-        
-        # store HOG feature and label
-        db[i, :HOG_feature_N] = hog.ravel()
-        db[i, -1] = label
-
-    return db
-
-# Read image
-img = cv2.imread("../imori.jpg").astype(np.float32)
-
-# get HOG
-histogram = HOG(img)
-
-# prepare gt bounding box
+# gt bounding box
 gt = np.array((47, 41, 129, 103), dtype=np.float32)
 
-# get database
-db = make_dataset(img, gt)
+# train data and label data
+train_x, train_t = get_db(img, gt, th=0.25)
 
-
-# train neural network
-# get input feature dimension
-input_dim = db.shape[1] - 1
-# prepare train data X
-train_x = db[:, :input_dim]
-# prepare train data t
-train_t = db[:, -1][..., None]
+# train data and label data
+test_x, test_t = get_db(img, gt, 100, th=0.25)
 
 # prepare neural network
-nn = NN(ind=input_dim, lr=0.01)
-# training
+nn = NN(train_x.shape[1], lr=0.01)
+
+# train
 nn = train_nn(nn, train_x, train_t, iteration_N=10000)
 
 # test
-test_nn(nn, train_x, train_t)
+test_nn(nn, test_x, test_t)
 

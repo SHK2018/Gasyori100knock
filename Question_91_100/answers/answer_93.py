@@ -23,7 +23,7 @@ def iou(a, b):
 
 	# no overlap
     if iou_w < 0 or iou_h < 0:
-	return 0.0
+	    return 0.0
 
 	# get area of IoU
     area_iou = iou_w * iou_h

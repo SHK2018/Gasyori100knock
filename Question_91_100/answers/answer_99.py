@@ -4,7 +4,7 @@ import numpy as np
 np.random.seed(0)
 
 # read image
-img = cv2.imread("imori_1.jpg")
+img = cv2.imread("../imori_1.jpg")
 H, W, C = img.shape
 
 # Grayscale
@@ -177,7 +177,7 @@ for i in range(10000):
 
 
 # read detect target image
-img2 = cv2.imread("imori_many.jpg")
+img2 = cv2.imread("../imori_many.jpg")
 H2, W2, C2 = img2.shape
 
 # Grayscale
@@ -297,3 +297,4 @@ for d in detects:
 cv2.imwrite("out.jpg", img2)
 cv2.imshow("result", img2)
 cv2.waitKey(0)
+cv2.destroyAllWindows()
